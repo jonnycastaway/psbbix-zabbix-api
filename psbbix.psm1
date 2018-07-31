@@ -270,7 +270,7 @@ Function Get-ZabbixVersion {
     
 	[CmdletBinding()]
 	Param (
-		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc,
+	[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$jsonrpc,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$session,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$id,
         [Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$true)][string]$URL
@@ -278,12 +278,15 @@ Function Get-ZabbixVersion {
     
 	if (!($global:zabsession -or $global:zabSessionParams)) {write-host "`nDisconnected from Zabbix Server!`n" -f red; return}
 	if ($global:zabsession -and $global:zabSessionParams) {
-    if (!$psboundparameters.count) {Get-ZabbixVersion @zabSessionParams; return}
-
+    	if (!$psboundparameters.count) {Get-ZabbixVersion @zabSessionParams; return}
+	
+	$params = @() #create empty array to resolve no params issue with zabbix 3.4
+	
 		$Body = @{
 			method = "apiinfo.version"
 			jsonrpc = $jsonrpc
 			id = $id
+			params = $params #resolve no params issue with zabbix 3.4
 		}
 		
 		$BodyJSON = ConvertTo-Json $Body
